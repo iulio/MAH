@@ -1,0 +1,40 @@
+{
+  "nim": {
+    "api_key": "",
+    "base_url": "https://integrate.api.nvidia.com/v1",
+    "timeout": 60.0,
+    "max_retries": 3,
+    "base_delay": 1.0
+  },
+  "models": {
+    "planner_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "coder_model": "deepseek-ai/deepseek-v4-flash-0731",
+    "verifier_model": "nvidia/nemotron-3.5-lightning-30b-a3b"
+  },
+  "sandbox": {
+    "workspace_dir": ".",
+    "auto_approve_commands": false,
+    "command_timeout": 120
+  },
+  "available_models": [],
+  "mcp": {
+    "servers": {
+      "github": {"transport": "stdio", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"], "enabled": false},
+      "postgres": {"transport": "stdio", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-postgres"], "enabled": false},
+      "context7": {"transport": "sse", "url": "https://context7.com/mcp", "enabled": false}
+    }
+  },
+  "telemetry": {
+    "enabled": true,
+    "export_dir": "./trajectories",
+    "redundant_threshold": 2,
+    "sample_rate": 1.0
+  },
+  "hooks": {
+    "enabled": true,
+    "block_destructive_commands": true,
+    "run_linter_on_edit": true,
+    "linter": "ruff",
+    "custom_patterns": []
+  }
+}

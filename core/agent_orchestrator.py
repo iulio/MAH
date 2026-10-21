@@ -234,10 +234,10 @@ class AgentHarness:
         return TOOL_SCHEMAS
 
     @staticmethod
-            def _read_only_tools() -> List[Dict[str, Any]]:
-                return [t for t in TOOL_SCHEMAS if t["function"]["name"] in READ_ONLY_TOOLS]
+    def _read_only_tools() -> List[Dict[str, Any]]:
+        return [t for t in TOOL_SCHEMAS if t["function"]["name"] in READ_ONLY_TOOLS]
 
-            def _build_system_prompt(self, role: str) -> str:
+    def _build_system_prompt(self, role: str) -> str:
         """Build the system prompt for a role (the repo map is attached by the context compactor)."""
         base_prompt = """You are an expert software engineer working in a multi-agent coding system.
 You have access to a workspace sandbox with file operations and terminal execution.
@@ -537,11 +537,11 @@ Guidelines:
 
         allowed = {t["function"]["name"] for t in tools}
         final_text_parts: List[str] = []
-        
-            # Track LLM call for telemetry
-            llm_start_time = time.time()
-            prompt_tokens_estimate = 0  # Would need tiktoken for accurate count
+        # Track LLM call for telemetry
+        llm_start_time = time.time()
+        prompt_tokens_estimate = 0  # Would need tiktoken for accurate count
 
+        for _ in range(MAX_TOOL_ROUNDS):
             for _ in range(MAX_TOOL_ROUNDS):
                 budget = self._preflight(compactor)
                 yield {
@@ -800,21 +800,21 @@ Guidelines:
         text = result.content.lower()
         return "passed" in text and "fail" not in text and "error" not in text
 
-            # ==================== New Integration Accessors ====================
+    # ==================== New Integration Accessors ====================
 
-            def get_telemetry_data(self) -> Optional[ProfilerData]:
+    def get_telemetry_data(self) -> Optional[ProfilerData]:
                 """Get aggregated telemetry data for UI visualization."""
                 if self._telemetry_context:
                     return ProfilerData.from_context(self._telemetry_context)
                 return None
 
-            def get_mcp_status(self) -> Dict[str, Any]:
+    def get_mcp_status(self) -> Dict[str, Any]:
                 """Get MCP connection status for UI."""
                 if self._mcp_manager:
                     return self._mcp_manager.get_connection_status()
                 return {}
 
-            def get_hook_status(self) -> Dict[str, Any]:
+    def get_hook_status(self) -> Dict[str, Any]:
                 """Get hook system status for UI."""
                 if self._hook_registry:
                     return {
@@ -824,7 +824,7 @@ Guidelines:
                     }
                 return {"enabled": False}
 
-            def get_sub_agent_status(self) -> Dict[str, Any]:
+    def get_sub_agent_status(self) -> Dict[str, Any]:
                 """Get sub-agent status for UI."""
                 if self._sub_agent_manager:
                     return {
@@ -834,20 +834,20 @@ Guidelines:
                     }
                 return {}
 
-            # ==================== State accessors ====================
+    # ==================== State accessors ====================
 
-            def get_conversation_history(self) -> List[AgentMessage]:
+    def get_conversation_history(self) -> List[AgentMessage]:
                 return self._conversation
 
-            def get_steps(self) -> List[AgentStep]:
+    def get_steps(self) -> List[AgentStep]:
                 return self._steps
 
-            def clear_history(self) -> None:
+    def clear_history(self) -> None:
                 self._conversation = []
                 self._steps = []
 
 
-        def build_sandbox(settings_manager: Optional[SettingsManager] = None, **overrides: Any) -> SandboxManager:
+def build_sandbox(settings_manager: Optional[SettingsManager] = None, **overrides: Any) -> SandboxManager:
             """Create a SandboxManager from persisted settings (optionally overridden)."""
             sm = settings_manager or get_settings_manager()
             s = sm.settings.sandbox
@@ -859,10 +859,10 @@ Guidelines:
                 docker_memory_limit=s.docker_memory_limit,
                 command_timeout=overrides.get("command_timeout", s.command_timeout),
                 auto_approve=overrides.get("auto_approve", s.auto_approve_commands),
-            )
+    )
 
 
-        async def create_harness(
+async def create_harness(
             workspace_dir: str,
             mode: AgentMode = AgentMode.ASK,
             max_iterations: int = 5,
@@ -874,7 +874,7 @@ Guidelines:
             sandbox = build_sandbox(
                 settings_manager, workspace_dir=workspace_dir,
                 auto_approve=auto_approve, command_timeout=command_timeout,
-            )
+    )
             git_guard = GitGuard(workspace_dir) if settings_manager.settings.sandbox.auto_git_checkpoint else None
             harness = AgentHarness(sandbox, settings_manager, mode, max_iterations, git_guard)
             await harness.__aenter__()
